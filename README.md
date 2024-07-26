@@ -4,87 +4,218 @@ An customer ticket monitoring application as assessment for internship hiring
 
 # API Documentation
 
-Base URL
+# 1. Users
 
-# 1. Get All Tickets
+# 1.1 Register User
 
-Endpoint: /api/tickets
+Endpoint: /api/users/register
 
-Method: GET
-Description: Retrieve a list of all tickets.
+Method: POST
 
-Headers:
-Authorization: Bearer <token>
+Description: Registers a new user.
+
+Request Body:
+
+{
+"name": "John Doe",
+"email": "johndoe@example.com",
+"password": "password123",
+"role": "customer"
+}
+Responses:
+
+201 Created
+
+{
+"\_id": "user_id",
+"name": "John Doe",
+"email": "johndoe@example.com",
+"role": "customer",
+"token": "jwt_token"
+}
+400 Bad Request
+
+{
+"message": "User already exists"
+}
+
+# 1.2 Authenticate User
+
+Endpoint: /api/users/login
+
+Method: POST
+
+Description: Authenticates a user and returns a JWT token.
+
+Request Body:
+
+{
+"email": "johndoe@example.com",
+"password": "password123"
+}
 Responses:
 
 200 OK
 
-Description: Returns a list of tickets.
-Content Type: application/json
-Response Body:
-json
+{
+"\_id": "user_id",
+"name": "John Doe",
+"email": "johndoe@example.com",
+"role": "customer",
+"token": "jwt_token"
+}
+401 Unauthorized
+
+{
+"message": "Invalid email or password"
+}
+
+# 2. Tickets
+
+# 2.1 Create Ticket
+
+Endpoint: /api/tickets
+
+Method: POST
+
+Description: Creates a new ticket.
+
+Request Body:
+
+{
+"title": "Issue with login",
+"description": "User unable to login with valid credentials"
+}
+Responses:
+
+201 Created
+
+{
+"message": "Ticket created successfully",
+"ticket": {
+"\_id": "ticket_id",
+"title": "Issue with login",
+"description": "User unable to login with valid credentials",
+"status": "open",
+"createdBy": "user_id",
+"createdAt": "timestamp",
+"updatedAt": "timestamp"
+}
+}
+400 Bad Request
+
+{
+"message": "Title and description are required"
+}
+
+# 2.2 Update Ticket
+
+Endpoint: /api/tickets/{id}
+
+Method: PUT
+
+Description: Updates a ticket by ID.
+
+Parameters:
+
+id (path parameter): The ID of the ticket to update.
+Request Body:
+
+{
+"title": "Updated Issue with login",
+"description": "Updated description of the issue",
+"status": "in progress",
+"assignedTo": "user_id"
+}
+Responses:
+
+200 OK
+
+{
+"\_id": "ticket_id",
+"title": "Updated Issue with login",
+"description": "Updated description of the issue",
+"status": "in progress",
+"assignedTo": "user_id",
+"createdBy": "user_id",
+"createdAt": "timestamp",
+"updatedAt": "timestamp"
+}
+404 Not Found
+
+{
+"message": "Ticket not found"
+}
+
+# 2.3 Delete Ticket
+
+Endpoint: /api/tickets/{id}
+
+Method: DELETE
+
+Description: Deletes a ticket by ID.
+
+Parameters:
+
+id (path parameter): The ID of the ticket to delete.
+Responses:
+
+200 OK
+
+{
+"message": "Ticket removed"
+}
+404 Not Found
+
+{
+"message": "Ticket not found"
+}
+
+# 2.4 Get All Tickets
+
+Endpoint: /api/tickets
+
+Method: GET
+
+Description: Retrieves all tickets.
+
+Responses:
+
+200 OK
 
 [
 {
-"_id": "605c72ef6d4f3b001f6e7a30",
-"title": "Sample Ticket",
-"description": "This is a sample ticket.",
+"_id": "ticket_id",
+"title": "Issue with login",
+"description": "User unable to login with valid credentials",
 "status": "open",
 "createdBy": "user_id",
-"createdAt": "2024-07-25T21:23:57.237Z",
-"updatedAt": "2024-07-25T21:23:57.237Z"
+"createdAt": "timestamp",
+"updatedAt": "timestamp"
 },
 ...
 ]
-401 Unauthorized
 
-Description: Authentication failed or user does not have permission.
-403 Forbidden
-
-Description: User does not have the required role to access this endpoint.
-
-# 2. Get Ticket by ID
+# 2.5 Get Ticket By Id
 
 Endpoint: /api/tickets/{id}
 
 Method: GET
 
-Description: Retrieve details of a specific ticket by ID.
+Description: Retrieves all tickets.
 
-Parameters:
-
-Path Parameter:
-id (string) - The unique identifier of the ticket.
-Headers:
-
-Authorization: Bearer <token>
 Responses:
 
 200 OK
 
-Description: Returns the details of the specified ticket.
-Content Type: application/json
-Response Body:
-json
-
+[
 {
-"\_id": "605c72ef6d4f3b001f6e7a30",
-"title": "Sample Ticket",
-"description": "This is a sample ticket.",
+"_id": "ticket_id",
+"title": "Issue with login",
+"description": "User unable to login with valid credentials",
 "status": "open",
 "createdBy": "user_id",
-"createdAt": "2024-07-25T21:23:57.237Z",
-"updatedAt": "2024-07-25T21:23:57.237Z"
+"createdAt": "timestamp",
+"updatedAt": "timestamp"
 }
-400 Bad Request
-
-Description: The provided ID is not valid or is missing.
-401 Unauthorized
-
-Description: Authentication failed or user does not have permission.
-403 Forbidden
-
-Description: User does not have the required role to access this endpoint.
-404 Not Found
-
-Description: The ticket with the specified ID was not found.
+]
