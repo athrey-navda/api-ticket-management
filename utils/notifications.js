@@ -1,44 +1,28 @@
 const nodemailer = require("nodemailer");
 
-const initializeSocketIO = (server) => {
-  const io = require("socket.io")(server, {
-    cors: {
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST"],
-    },
-  });
-
-  io.on("connection", (socket) => {
-    console.log("New client connected");
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
-    });
-  });
-
-  const notifyClient = (message) => {
-    io.emit("notification", message);
-  };
-
-  return { notifyClient };
-};
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "raycabackend@gmail.com",
+    pass: "wtydiixrhnavusod",
+  },
+  debug: false,
+});
 
 const sendNotification = async (email, subject, text) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  });
-
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: "raycabackend@gmail.com",
     to: email,
     subject,
     text,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent to ${email} with subject: ${subject}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}:`, error);
+  }
 };
 
-module.exports = { initializeSocketIO, sendNotification };
+module.exports = { sendNotification };

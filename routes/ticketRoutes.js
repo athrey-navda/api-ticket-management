@@ -26,6 +26,32 @@
 
 /**
  * @swagger
+ * /api/tickets/{id}:
+ *   get:
+ *     summary: Get a ticket by ID
+ *     tags: [Tickets]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The ID of the ticket to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The ticket with the specified ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ticket'
+ *       404:
+ *         description: Ticket not found
+ */
+
+/**
+ * @swagger
  * /api/tickets:
  *   post:
  *     summary: Create a new ticket
@@ -54,6 +80,8 @@
  *               $ref: '#/components/schemas/Ticket'
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: Ticket not found
  */
 
 /**
@@ -97,6 +125,8 @@
  *               $ref: '#/components/schemas/Ticket'
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: Ticket not found
  */
 
 /**
@@ -129,6 +159,7 @@ const {
   updateTicket,
   deleteTicket,
   getTickets,
+  getTicketById,
 } = require("../controllers/ticketController");
 const protect = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -141,6 +172,13 @@ router.get(
   protect,
   roleMiddleware(["customer", "support", "admin"]),
   getTickets
+);
+
+router.get(
+  "/:id",
+  protect,
+  roleMiddleware(["customer", "support", "admin"]),
+  getTicketById
 );
 
 router.put("/:id", protect, roleMiddleware(["support", "admin"]), updateTicket);
