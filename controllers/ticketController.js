@@ -104,9 +104,13 @@ const deleteTicket = async (req, res) => {
   }
 };
 
-const getTickets = async (res) => {
-  const tickets = await Ticket.find({});
-  res.json(tickets);
+const getTickets = async (req, res) => {
+  try {
+    const tickets = await Ticket.find({});
+    res.json(tickets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
 
 const getTicketById = async (req, res) => {
