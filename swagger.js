@@ -80,11 +80,6 @@ const options = {
           },
         },
       },
-      security: [
-        {
-          BearerAuth: [],
-        },
-      ],
     },
   },
   apis: ["./routes/*.js"],

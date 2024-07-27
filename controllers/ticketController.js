@@ -6,9 +6,11 @@ const createTicket = async (req, res) => {
   const { title, description } = req.body;
   try {
     if (!title || !description) {
-      return res
-        .status(400)
-        .json({ message: "Title and description are required" });
+      return res.status(400).json({
+        response: "failed",
+        status: 400,
+        data: { message: "Title and description are required" },
+      });
     }
 
     const ticket = new Ticket({
@@ -39,77 +41,131 @@ const createTicket = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Ticket created successfully",
-      ticket: createdTicket,
+      response: "success",
+      status: 201,
+      data: {
+        message: "Ticket created successfully",
+        ticket: createdTicket,
+      },
     });
   } catch (error) {
     console.error("Error creating ticket:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
   }
 };
 
 const updateTicket = async (req, res) => {
   const { title, description, status, assignedTo } = req.body;
-  const ticket = await Ticket.findById(req.params.id);
-  if (ticket) {
-    ticket.title = title || ticket.title;
-    ticket.description = description || ticket.description;
-    ticket.status = status || ticket.status;
-    if (assignedTo) {
-      const user = await User.findById(assignedTo);
-      if (user) {
-        ticket.assignedTo = user._id;
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (ticket) {
+      ticket.title = title || ticket.title;
+      ticket.description = description || ticket.description;
+      ticket.status = status || ticket.status;
+      if (assignedTo) {
+        const user = await User.findById(assignedTo);
+        if (user) {
+          ticket.assignedTo = user._id;
+          await sendNotification(
+            user.email,
+            "Ticket Assigned",
+            `You have been assigned ticket "${ticket.title}".`
+          );
+        }
+      }
+      const updatedTicket = await ticket.save();
+
+      const creator = await User.findById(ticket.createdBy);
+      if (creator) {
         await sendNotification(
-          user.email,
-          "Ticket Assigned",
-          `You have been assigned ticket "${ticket.title}".`
+          creator.email,
+          "Ticket Updated",
+          `Your ticket with title "${updatedTicket.title}" has been updated. Detail:${updatedTicket}`
         );
       }
-    }
-    const updatedTicket = await ticket.save();
 
-    const creator = await User.findById(ticket.createdBy);
-    if (creator) {
-      await sendNotification(
-        creator.email,
-        "Ticket Updated",
-        `Your ticket with title "${updatedTicket.title}" has been updated. Detail:${ticket}`
-      );
+      res.json({
+        response: "success",
+        status: 200,
+        data: updatedTicket,
+      });
+    } else {
+      res.status(404).json({
+        response: "failed",
+        status: 404,
+        data: { message: "Ticket not found" },
+      });
     }
-
-    res.json(updatedTicket);
-  } else {
-    res.status(404);
-    throw new Error("Ticket not found");
+  } catch (error) {
+    console.error("Error updating ticket:", error);
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
   }
 };
 
 const deleteTicket = async (req, res) => {
-  const ticket = await Ticket.findById(req.params.id);
-  if (ticket) {
-    const creator = await User.findById(ticket.createdBy);
-    if (creator) {
-      await sendNotification(
-        creator.email,
-        "Ticket Deleted",
-        `Your ticket with title "${ticket.title}" has been deleted.`
-      );
-    }
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (ticket) {
+      const creator = await User.findById(ticket.createdBy);
+      if (creator) {
+        await sendNotification(
+          creator.email,
+          "Ticket Deleted",
+          `Your ticket with title "${ticket.title}" has been deleted.`
+        );
+      }
 
-    await ticket.remove();
-    res.json({ message: "Ticket removed" });
-  } else {
-    res.status(404);
-    throw new Error("Ticket not found");
+      await ticket.remove();
+      res.json({
+        response: "success",
+        status: 200,
+        data: { message: "Ticket removed" },
+      });
+    } else {
+      res.status(404).json({
+        response: "failed",
+        status: 404,
+        data: { message: "Ticket not found" },
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting ticket:", error);
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
   }
 };
 
 const getTickets = async (req, res) => {
   try {
     const tickets = await Ticket.find({});
-    res.json(tickets);
+    const formattedTickets = {};
+    tickets.forEach((ticket, index) => {
+      formattedTickets[index] = ticket;
+    });
+
+    res.json({
+      response: "success",
+      status: 200,
+      data: formattedTickets,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching tickets:", error);
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
   }
 };
 
@@ -119,11 +175,24 @@ const getTicketById = async (req, res) => {
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+      return res.status(404).json({
+        response: "failed",
+        status: 404,
+        data: { message: "Ticket not found" },
+      });
     }
-    res.json(ticket);
+    res.json({
+      response: "success",
+      status: 200,
+      data: ticket,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    console.error("Error fetching ticket by ID:", error);
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
   }
 };
 
