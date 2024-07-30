@@ -129,10 +129,38 @@ const getStaffUsers = async (req, res) => {
   }
 };
 
+const getUserDetails = async (req, res) => {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return res.status(404).json({
+        response: "failed",
+        status: 404,
+        data: { message: "User not found" },
+      });
+    }
+
+    res.json({
+      response: "success",
+      status: 200,
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    res.status(500).json({
+      response: "failed",
+      status: 500,
+      data: { message: "Server error", error: error.message },
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   authUser,
   updateTokenUser,
   getCustomers,
   getStaffUsers,
+  getUserDetails,
 };

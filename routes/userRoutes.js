@@ -312,6 +312,64 @@
  *                   example: 200
  *                 data:
  *                   type: object
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "johndoe@example.com"
+ *               token:
+ *                 type: string
+ *                 example: "token"
+ *               role:
+ *                 type: string
+ *                 enum: [customer, support, admin]
+ *                 example: "customer"
+ *       403:
+ *         description: Access denied for users without the 'admin' role
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   example: "failed"
+ *                 status:
+ *                   type: integer
+ *                   example: 403
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     message:
+ *                       type: string
+ *                       example: "Access denied"
+ */
+
+/**
+ * @swagger
+ * /api/users/user-details:
+ *   get:
+ *     summary: Get user details
+ *     tags: [Users]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users with roles 'staff'
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   example: "success"
+ *                 status:
+ *                   type: integer
+ *                   example: 200
+ *                 data:
+ *                   type: object
  *                   additionalProperties:
  *                     type: object
  *                     properties:
@@ -355,6 +413,7 @@ const {
   updateTokenUser,
   getCustomers,
   getStaffUsers,
+  getUserDetails,
 } = require("../controllers/userController");
 const protect = require("../middleware/authMiddleware");
 const roleMiddleware = require("../middleware/roleMiddleware");
@@ -370,5 +429,6 @@ router.get(
   getCustomers
 );
 router.get("/staff", protect, roleMiddleware(["admin"]), getStaffUsers);
+router.get("/user-details", protect, getUserDetails);
 
 module.exports = router;
