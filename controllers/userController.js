@@ -108,9 +108,11 @@ const getCustomers = async (req, res) => {
   }
 };
 
-const getStaffUsers = async (req, res) => {
+const getSupportUsers = async (req, res) => {
   try {
-    const users = await User.find({ role: { $in: ["staff"] } });
+    const users = await User.find({ role: { $in: ["support"] } }).select(
+      "-password"
+    );
     res.json({
       response: "success",
       status: 200,
@@ -141,10 +143,12 @@ const getUserDetails = async (req, res) => {
       });
     }
 
+    const { password, ...userWithoutPassword } = user._doc;
+
     res.json({
       response: "success",
       status: 200,
-      data: user,
+      data: userWithoutPassword,
     });
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -161,6 +165,6 @@ module.exports = {
   authUser,
   updateTokenUser,
   getCustomers,
-  getStaffUsers,
+  getSupportUsers,
   getUserDetails,
 };

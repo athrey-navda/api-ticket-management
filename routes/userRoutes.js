@@ -268,7 +268,7 @@
  *                         type: string
  *                         example: "customer"
  *       403:
- *         description: Access denied for users without the 'staff' role
+ *         description: Access denied for users without the 'support' role
  *         content:
  *           application/json:
  *             schema:
@@ -290,15 +290,15 @@
 
 /**
  * @swagger
- * /api/users/staff:
+ * /api/users/support:
  *   get:
- *     summary: Get staff users with roles 'staff'
+ *     summary: Get support users with roles 'support'
  *     tags: [Users]
  *     security:
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: List of users with roles 'staff'
+ *         description: List of users with roles 'support'
  *         content:
  *           application/json:
  *             schema:
@@ -356,7 +356,7 @@
  *       - BearerAuth: []
  *     responses:
  *       200:
- *         description: List of users with roles 'staff'
+ *         description: List of users with roles 'support'
  *         content:
  *           application/json:
  *             schema:
@@ -384,7 +384,7 @@
  *                         example: "johndoe@example.com"
  *                       role:
  *                         type: string
- *                         example: "staff"
+ *                         example: "support"
  *       403:
  *         description: Access denied for users without the 'admin' role
  *         content:
@@ -412,7 +412,7 @@ const {
   authUser,
   updateTokenUser,
   getCustomers,
-  getStaffUsers,
+  getSupportUsers,
   getUserDetails,
 } = require("../controllers/userController");
 const protect = require("../middleware/authMiddleware");
@@ -428,7 +428,7 @@ router.get(
   roleMiddleware(["support", "admin"]),
   getCustomers
 );
-router.get("/staff", protect, roleMiddleware(["admin"]), getStaffUsers);
+router.get("/support", protect, roleMiddleware(["admin"]), getSupportUsers);
 router.get("/user-details", protect, getUserDetails);
 
 module.exports = router;

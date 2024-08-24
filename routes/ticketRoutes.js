@@ -96,7 +96,7 @@
  *       - name: id
  *         in: path
  *         required: true
- *         description: The ticket id
+ *         description: Update the ticket
  *         schema:
  *           type: string
  *     requestBody:
@@ -116,6 +116,9 @@
  *                 type: string
  *                 enum: [open, in progress, closed]
  *                 example: "in progress"
+ *               assignedTo:
+ *                 type: string
+ *                 example: "User Id"
  *     responses:
  *       200:
  *         description: The ticket was updated

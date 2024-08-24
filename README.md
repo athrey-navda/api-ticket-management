@@ -114,7 +114,7 @@ Responses:
 
 Endpoint: /api/users/customers
 Method: GET
-Description: Retrieves all customers. Accessible only by staff and admin.
+Description: Retrieves all customers. Accessible only by support and admin.
 Responses:
 200 OK
 {
@@ -139,11 +139,11 @@ Responses:
 }
 }
 
-# 1.5 Get All Staff
+# 1.5 Get All Support Staff
 
-Endpoint: /api/users/staff
+Endpoint: /api/users/support
 Method: GET
-Description: Retrieves all staff. Accessible only by admin.
+Description: Retrieves all support. Accessible only by admin.
 Responses:
 200 OK
 {
@@ -154,7 +154,7 @@ Responses:
 "_id": "user_id",
 "name": "Jane Doe",
 "email": "janedoe@example.com",
-"role": "staff"
+"role": "support"
 }
 ]
 }

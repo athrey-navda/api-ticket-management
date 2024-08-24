@@ -12,7 +12,12 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:4200",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/users", userRoutes);
@@ -25,7 +30,7 @@ const server = app.listen(PORT, console.log(`Server running on port ${PORT}`));
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:4200",
     methods: ["GET", "POST"],
   },
 });
