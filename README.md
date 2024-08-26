@@ -1,4 +1,4 @@
-# rayca-backend
+# API- Ticket management
 
 An customer ticket monitoring application as assessment for internship hiring
 
