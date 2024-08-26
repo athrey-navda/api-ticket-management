@@ -1,6 +1,6 @@
 # API- Ticket management
 
-An customer ticket monitoring application as assessment for internship hiring
+An customer ticket monitoring application with user, support staff and admin interface.
 
 # API Documentation
 
